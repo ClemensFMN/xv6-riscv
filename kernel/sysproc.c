@@ -95,3 +95,15 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+
+uint64 sys_trace(void) {
+  int mask;
+  argint(0, &mask);
+  printf("Hello from a new syscall, %d \n", mask);
+  // get the current process
+  struct proc *p = myproc();
+  // and set the current process mask accordingly
+  p->mask = mask;
+  return 0;
+}
