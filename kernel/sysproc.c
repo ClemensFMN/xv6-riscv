@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "info.h"
 
 uint64
 sys_exit(void)
@@ -105,5 +106,27 @@ uint64 sys_trace(void) {
   struct proc *p = myproc();
   // and set the current process mask accordingly
   p->mask = mask;
+  return 0;
+}
+
+
+uint64 sys_sysinfo(void) {
+  printf("Hello from sysinfo \n");
+
+  // retrieve info struct - see sysfile.c:sys_fstat, file.c:filestat
+  uint64 in; // user pointer to struct inf
+  argaddr(0, &in); // get the adress of the struct
+
+  struct proc *p = myproc();
+  printf("Proc name: %s \n", p->name);
+  // create an info struct here (in kernel space) and fill it
+  struct info inf;
+  inf.pid = p->pid;
+  inf.somethingelse = 99;
+  
+  
+  // copy from here to user space
+  copyout(p->pagetable, in, (char *)&inf, sizeof(inf));
+  
   return 0;
 }
